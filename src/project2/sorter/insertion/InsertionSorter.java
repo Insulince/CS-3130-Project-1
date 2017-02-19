@@ -1,44 +1,57 @@
 package project2.sorter.insertion;
 
-import project2.sorter.Sorter;
+public class InsertionSorter {
+    public Integer[] linearInsertionSort(final Integer[] data) {
+        for (int currentIntegerIndex = 1; currentIntegerIndex < data.length; currentIntegerIndex++) {
+            //Select next Integer.
+            Integer currentInteger = data[currentIntegerIndex];
 
-public abstract class InsertionSorter extends Sorter {
-    protected Integer[] sortedData;
+            //Compare with previous Integers.
+            int insertionIndex = 0;
+            for (int candidateInsertionIntegerIndex = currentIntegerIndex - 1; candidateInsertionIntegerIndex >= 0; candidateInsertionIntegerIndex--) {
+                Integer candidateInsertionInteger = data[candidateInsertionIntegerIndex];
+                if (currentInteger > candidateInsertionInteger) {
+                    insertionIndex = candidateInsertionIntegerIndex + 1;
+                    break;
+                }
+            }
 
-    public Integer[] getSortedData() {
-        return sortedData;
-    }
+            //Shift affected Integers.
+            for (int indexToBeShiftedInto = currentIntegerIndex; indexToBeShiftedInto > insertionIndex; indexToBeShiftedInto--) {
+                int indexToBeShiftedFrom = indexToBeShiftedInto - 1;
+                Integer currentlyShiftingInteger = data[indexToBeShiftedFrom];
+                data[indexToBeShiftedInto] = currentlyShiftingInteger;
+            }
 
-    public void setSortedData(Integer[] sortedData) {
-        this.sortedData = sortedData;
-    }
-
-    @Override
-    public Integer[] sort(final Integer[] data) {
-        this.sortedData = data;
-
-        for (int currentIntegerIndex = 1; currentIntegerIndex < this.sortedData.length; currentIntegerIndex++) {
-            Integer currentInteger = this.sortedData[currentIntegerIndex];
-
-            int insertionIndex = compareWithPreviousIntegers(currentIntegerIndex, currentInteger);
-
-            shiftAffectedIntegers(insertionIndex, currentIntegerIndex);
-
-            insertInteger(currentInteger, insertionIndex);
+            //Insert current Integer.
+            data[insertionIndex] = currentInteger;
         }
 
-        return this.sortedData;
+        return data;
     }
 
-    public abstract int compareWithPreviousIntegers(final int currentIntegerIndex, final Integer currentInteger);
+    public Integer[] binaryInsertionSort(final Integer[] data) {
+        for (int currentIntegerIndex = 1; currentIntegerIndex < data.length; currentIntegerIndex++) {
+            //Select next Integer.
+            Integer currentInteger = data[currentIntegerIndex];
 
-    public void shiftAffectedIntegers(final int shiftStartIndex, final int shiftEndIndex) {
-        for (int i = shiftEndIndex; i > shiftStartIndex; i--) {
-            this.sortedData[i] = this.sortedData[i - 1];
+            //Compare with previous Integers.
+            int insertionIndex = 0;
+            for (int candidateInsertionIntegerIndex = currentIntegerIndex - 1; candidateInsertionIntegerIndex >= 0; candidateInsertionIntegerIndex--) {
+                Integer candidateInsertionInteger = data[candidateInsertionIntegerIndex];
+                if (currentInteger > candidateInsertionInteger) {
+                    insertionIndex = candidateInsertionIntegerIndex + 1;
+                    break;
+                }
+            }
+
+            //Shift affected Integers.
+            //implement
+
+            //Insert current Integer.
+            data[insertionIndex] = currentInteger;
         }
-    }
 
-    public void insertInteger(final Integer integer, final int integerIndex) {
-        this.sortedData[integerIndex] = integer;
+        return data;
     }
 }

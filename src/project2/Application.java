@@ -1,7 +1,6 @@
 package project2;
 
-import project2.sorter.insertion.binary.BinaryInsertionSorter;
-import project2.sorter.insertion.linear.LinearInsertionSorter;
+import project2.sorter.insertion.InsertionSorter;
 
 public class Application {
     public static void main(String[] args) {
@@ -9,14 +8,11 @@ public class Application {
 
         displayData(data);
 
-        LinearInsertionSorter lis = new LinearInsertionSorter();
-        BinaryInsertionSorter bis = new BinaryInsertionSorter();
+        InsertionSorter insertionSorter = new InsertionSorter();
 
-        data = lis.sort(data);
+        data = insertionSorter.linearInsertionSort(data);
 
         displayData(data);
-
-//        data = bis.sort(data);
     }
 
     private static Integer[] generateData() {
@@ -28,6 +24,7 @@ public class Application {
 
         for (int i = 0; i < AMOUNT; i++) {
             ret[i] = (int) (LOWER_BOUND + Math.random() * (UPPER_BOUND - LOWER_BOUND + 1));
+//            ret[i] = i+1;
         }
 
         return ret;
@@ -59,7 +56,7 @@ public class Application {
             rowCounter += NUM_COLUIMNS;
 
             for (int columnNumber = 0; columnNumber < NUM_COLUIMNS; columnNumber++) {
-                String cellValueAsString = String.valueOf(data[NUM_COLUIMNS * columnNumber + rowNumber]);
+                String cellValueAsString = String.valueOf(data[NUM_COLUIMNS * rowNumber + columnNumber]);
                 int lengthOfCellValueString = cellValueAsString.length();
 
                 for (int paddingCharacterIndex = 0; paddingCharacterIndex < "####".length() - lengthOfCellValueString; paddingCharacterIndex++) {
