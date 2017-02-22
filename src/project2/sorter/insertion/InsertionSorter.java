@@ -1,30 +1,36 @@
 package project2.sorter.insertion;
 
 public class InsertionSorter {
+    public int linearComparisons;
+    public int linearAssignments;
+    public int binaryComparisons = 0;
+    public int binaryAssignments = 0;
+
     public int[] linearInsertionSort(final int[] data) {
+        this.linearComparisons = 0;
+        this.linearAssignments = 0;
         for (int currentIntegerIndex = 1; currentIntegerIndex < data.length; currentIntegerIndex++) {
             //Select next int.
             int currentInteger = data[currentIntegerIndex];
+            this.linearAssignments++;
 
             //Compare with previous Integers.
-            int insertionIndex = 0;
-            for (int candidateInsertionIntegerIndex = currentIntegerIndex - 1; candidateInsertionIntegerIndex >= 0; candidateInsertionIntegerIndex--) {
-                int candidateInsertionInteger = data[candidateInsertionIntegerIndex];
-                if (currentInteger > candidateInsertionInteger) {
-                    insertionIndex = candidateInsertionIntegerIndex + 1;
-                    break;
-                }
+            int candidateInsertionIntegerIndex = currentIntegerIndex - 1;
+            while (candidateInsertionIntegerIndex >= 0 && currentInteger < data[candidateInsertionIntegerIndex]) {
+                this.linearComparisons++;
+                candidateInsertionIntegerIndex--;
             }
+            int insertionIndex = candidateInsertionIntegerIndex + 1;
 
             //Shift affected Integers.
-            for (int indexToBeShiftedInto = currentIntegerIndex; indexToBeShiftedInto > insertionIndex; indexToBeShiftedInto--) {
-                int indexToBeShiftedFrom = indexToBeShiftedInto - 1;
-                int currentlyShiftingInteger = data[indexToBeShiftedFrom];
-                data[indexToBeShiftedInto] = currentlyShiftingInteger;
+            for (int currentIndexToBeShiftedInto = currentIntegerIndex; currentIndexToBeShiftedInto > insertionIndex; currentIndexToBeShiftedInto--) {
+                data[currentIndexToBeShiftedInto] = data[currentIndexToBeShiftedInto - 1];
+                this.linearAssignments++;
             }
 
             //Insert current int.
             data[insertionIndex] = currentInteger;
+            this.linearAssignments++;
         }
 
         return data;
@@ -34,45 +40,51 @@ public class InsertionSorter {
         for (int currentIntegerIndex = 1; currentIntegerIndex < data.length; currentIntegerIndex++) {
             //Select next int.
             int currentInteger = data[currentIntegerIndex];
-            
+            this.binaryAssignments++;
+
             //Compare with previous Integers.
             int insertionIndex;
             int lower = 0;
             int upper = currentIntegerIndex;
-            int range = upper - lower;
-            int focusIndex = range / 2 + lower;
 
-            while (upper > lower) {
-                if (currentInteger == data[focusIndex]) {
-                    break;
-                } else if (currentInteger < data[focusIndex]) {
-                    lower = lower;
-                    upper = focusIndex - 1;
-                    range = upper - lower;
-                    focusIndex = range / 2 + lower;
+            while (true) {
+                int range = upper - lower;
+                int focusIndex = range / 2 + lower;
+
+                if (currentInteger < data[focusIndex]) {
+                    this.binaryComparisons++;
+
+                    if (range / 2 > 0) {
+                        upper = focusIndex;
+                    } else {
+                        insertionIndex = focusIndex;
+                        break;
+                    }
                 } else if (currentInteger > data[focusIndex]) {
-                    lower = focusIndex + 1;
-                    upper = upper;
-                    range = upper - lower;
-                    focusIndex = range / 2 + lower;
+                    this.binaryComparisons += 2;
+
+                    if (range / 2 > 0) {
+                        lower = focusIndex;
+                    } else {
+                        insertionIndex = focusIndex + 1;
+                        break;
+                    }
+                } else {
+                    this.binaryComparisons += 2;
+                    insertionIndex = focusIndex + 1;
+                    break;
                 }
             }
 
-            if (currentInteger >= data[focusIndex]) {
-                insertionIndex = focusIndex + 1;
-            } else {
-                insertionIndex = focusIndex;
-            }
-
             //Shift affected Integers.
-            for (int indexToBeShiftedInto = currentIntegerIndex; indexToBeShiftedInto > insertionIndex; indexToBeShiftedInto--) {
-                int indexToBeShiftedFrom = indexToBeShiftedInto - 1;
-                int currentlyShiftingInteger = data[indexToBeShiftedFrom];
-                data[indexToBeShiftedInto] = currentlyShiftingInteger;
+            for (int currentIndexToBeShiftedInto = currentIntegerIndex; currentIndexToBeShiftedInto > insertionIndex; currentIndexToBeShiftedInto--) {
+                data[currentIndexToBeShiftedInto] = data[currentIndexToBeShiftedInto - 1];
+                this.binaryAssignments++;
             }
 
             //Insert current int.
             data[insertionIndex] = currentInteger;
+            this.binaryAssignments++;
         }
 
         return data;

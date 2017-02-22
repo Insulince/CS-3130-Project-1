@@ -5,12 +5,12 @@ import project2.sorter.insertion.InsertionSorter;
 import java.util.Arrays;
 
 public class Application {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws RuntimeException {
         int[] data1 = generateData();
         int[] data2 = Arrays.copyOf(data1, data1.length);
 
-        if (!Arrays.toString(data1).equals(Arrays.toString(data2))) {
-            throw new Exception("Could not duplicate integer array, thus a valid performance comparison cannot be made!");
+        if (!Arrays.equals(data1, data2)) {
+            throw new RuntimeException("Internal Error: Could not duplicate integer array, thus a valid performance comparison cannot be made!");
         }
 
         displayData(data1);
@@ -29,20 +29,20 @@ public class Application {
 
         System.out.println(Arrays.toString(data1).equals(Arrays.toString(data2)));
 
-//        System.out.println(insertionSorter.linearAssignments);
-//        System.out.println(insertionSorter.linearComparisons);
+        System.out.println(insertionSorter.linearAssignments);
+        System.out.println(insertionSorter.linearComparisons);
+        System.out.println("");
+        System.out.println(insertionSorter.binaryAssignments);
+        System.out.println(insertionSorter.binaryComparisons);
     }
 
     private static int[] generateData() {
-        final int AMOUNT = 1000;
-        final int LOWER_BOUND = 1;
-        final int UPPER_BOUND = 1000;
+        int[] ret = new int[1000];
 
-        int[] ret = new int[AMOUNT];
-
-        for (int i = 0; i < AMOUNT; i++) {
-            ret[i] = (int) (LOWER_BOUND + Math.random() * (UPPER_BOUND - LOWER_BOUND + 1));
-//            ret[i] = i+1;
+        for (int i = 0; i < 1000; i++) {
+//            ret[i] = (int) (1 + Math.random() * 1000);
+//            ret[i] = i + 1;
+            ret[i] = 1000 - i;
         }
 
         return ret;
