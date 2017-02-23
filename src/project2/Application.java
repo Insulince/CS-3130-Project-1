@@ -1,48 +1,196 @@
 package project2;
 
-import project2.sorter.insertion.InsertionSorter;
-
 import java.util.Arrays;
 
 public class Application {
+    private static int linearComparisons;
+    private static int linearAssignments;
+    private static long linearStartTime;
+    private static long linearEndTime;
+    private static long linearDuration;
+    private static int binaryComparisons;
+    private static int binaryAssignments;
+    private static long binaryStartTime;
+    private static long binaryEndTime;
+    private static long binaryDuration;
+    
     public static void main(String[] args) throws RuntimeException {
+        System.out.print("Generating data for Array #1...");
         int[] data1 = generateData();
+        System.out.println("  done.");
+        System.out.print("Creating copy of initial set of data for Array #2...");
         int[] data2 = Arrays.copyOf(data1, data1.length);
+        System.out.println("  done.");
 
+        System.out.print("Checking that Array #1 matches Array #2 before sorting...");
         if (!Arrays.equals(data1, data2)) {
-            throw new RuntimeException("Internal Error: Could not duplicate integer array, thus a valid performance comparison cannot be made!");
+            throw new RuntimeException("Internal Error: Could not duplicate Array #1 for Array #2, thus a valid performance comparison cannot be made! This is unusual behavior!");
+        }
+        System.out.println("  done.");
+
+        System.out.println("Contents of Array #1 before the sort:");
+        displayData(data1);
+        System.out.println("Beginning Linear Insertion Sort on Array #1...");
+        data1 = linearInsertionSort(data1);
+        System.out.println("Linear Insertion Sort on Array #1 complete.");
+        System.out.println("Contents of Array #1 after the sort:");
+        displayData(data1);
+        System.out.print("Checking that Array #1 is sorted in ascending order...");
+        if (!sorted(data1)) {
+            throw new RuntimeException("Linear Insertion Sort Error: Array #1 is not sorted!");
+        }
+        System.out.println("  done.");
+
+        System.out.println("Array #1 sorted using:");
+        System.out.println("Linear sort comparisons: " + linearComparisons);
+        System.out.println("Linear sort assignments: " + linearAssignments);
+        System.out.println("Linear sort duration (Milliseconds): " + (linearDuration / 1000000.0));
+
+        System.out.println("Contents of Array #2 before the sort:");
+        displayData(data2);
+        System.out.println("Beginning Binary Insertion Sort on Array #2...");
+        binaryInsertionSort(data2);
+        System.out.println("Binary Insertion Sort on Array #2 complete.");
+        System.out.println("Contents of Array #2 after the sort.");
+        displayData(data2);
+        System.out.print("Checking that Array #2 is sorted in ascending order...");
+        if (!sorted(data2)) {
+            throw new RuntimeException("Binary Insertion Sort Error: Array #2 is not sorted!");
+        }
+        System.out.println("  done.");
+
+        System.out.println("Array #2 sorted using:");
+        System.out.println("Binary sort comparisons: " + binaryComparisons);
+        System.out.println("Binary sort assignments: " + binaryAssignments);
+        System.out.println("Binary sort duration (Milliseconds): " + (binaryDuration / 1000000.0));
+
+        System.out.print("Checking that Array #1 matches Array #2 after the sorting...");
+        if (!Arrays.equals(data1, data2)) {
+            throw new RuntimeException("Sorting Error: The two arrays do not match, one or both of the sorting algorithms failed to keep the data intact!");
+        }
+        System.out.println(" done.");
+
+        System.out.println("---------- Final data recap ----------");
+        System.out.println("Array #1 sorted using:");
+        System.out.println("Linear sort comparisons: " + linearComparisons);
+        System.out.println("Linear sort assignments: " + linearAssignments);
+        System.out.println("Linear sort duration (Milliseconds): " + (linearDuration / 1000000.0));
+        System.out.println("Array #2 sorted using:");
+        System.out.println("Binary sort comparisons: " + binaryComparisons);
+        System.out.println("Binary sort assignments: " + binaryAssignments);
+        System.out.println("Binary sort duration (Milliseconds): " + (binaryDuration / 1000000.0));
+
+    }
+
+    private static boolean sorted(final int[] data) {
+        for (int i = 1; i < data.length; i++) {
+            if (data[i - 1] > data[i]) {
+                return false;
+            }
         }
 
-        displayData(data1);
+        return true;
+    }
 
-        InsertionSorter insertionSorter = new InsertionSorter();
+    private static int[] linearInsertionSort(final int[] data) {
+        linearComparisons = 0;
+        linearAssignments = 0;
+        linearStartTime = System.nanoTime();
 
-        data1 = insertionSorter.linearInsertionSort(data1);
+        for (int currentIntegerIndex = 1; currentIntegerIndex < data.length; currentIntegerIndex++) {
+            //Select next int.
+            int currentInteger = data[currentIntegerIndex];
+            linearAssignments++;
 
-        displayData(data1);
+            //Compare with previous Integers.
+            int candidateInsertionIntegerIndex = currentIntegerIndex - 1;
+            while (candidateInsertionIntegerIndex >= 0 && currentInteger < data[candidateInsertionIntegerIndex]) {
+                linearComparisons++;
+                candidateInsertionIntegerIndex--;
+            }
+            int insertionIndex = candidateInsertionIntegerIndex + 1;
 
-        displayData(data2);
+            //Shift affected Integers.
+            for (int currentIndexToBeShiftedInto = currentIntegerIndex; currentIndexToBeShiftedInto > insertionIndex; currentIndexToBeShiftedInto--) {
+                data[currentIndexToBeShiftedInto] = data[currentIndexToBeShiftedInto - 1];
+                linearAssignments++;
+            }
 
-        insertionSorter.binaryInsertionSort(data2);
+            //Insert current int.
+            data[insertionIndex] = currentInteger;
+            linearAssignments++;
+        }
 
-        displayData(data2);
+        linearEndTime = System.nanoTime();
+        linearDuration = linearEndTime - linearStartTime;
 
-        System.out.println(Arrays.toString(data1).equals(Arrays.toString(data2)));
+        return data;
+    }
 
-        System.out.println(insertionSorter.linearAssignments);
-        System.out.println(insertionSorter.linearComparisons);
-        System.out.println("");
-        System.out.println(insertionSorter.binaryAssignments);
-        System.out.println(insertionSorter.binaryComparisons);
+    private static int[] binaryInsertionSort(final int[] data) {
+        binaryComparisons = 0;
+        binaryAssignments = 0;
+        binaryStartTime = System.nanoTime();
+
+        for (int currentIntegerIndex = 1; currentIntegerIndex < data.length; currentIntegerIndex++) {
+            //Select next int.
+            int currentInteger = data[currentIntegerIndex];
+            binaryAssignments++;
+
+            //Compare with previous Integers.
+            int insertionIndex;
+            int lower = 0;
+            int upper = currentIntegerIndex;
+
+            while (true) {
+                int range = upper - lower;
+                int focusIndex = range / 2 + lower;
+
+                if (currentInteger < data[focusIndex]) {
+                    binaryComparisons++;
+
+                    if (range / 2 > 0) {
+                        upper = focusIndex;
+                    } else {
+                        insertionIndex = focusIndex;
+                        break;
+                    }
+                } else {
+                    binaryComparisons++;
+
+                    if (range / 2 > 0) {
+                        lower = focusIndex;
+                    } else {
+                        insertionIndex = focusIndex + 1;
+                        break;
+                    }
+                }
+            }
+
+            //Shift affected Integers.
+            for (int currentIndexToBeShiftedInto = currentIntegerIndex; currentIndexToBeShiftedInto > insertionIndex; currentIndexToBeShiftedInto--) {
+                data[currentIndexToBeShiftedInto] = data[currentIndexToBeShiftedInto - 1];
+                binaryAssignments++;
+            }
+
+            //Insert current int.
+            data[insertionIndex] = currentInteger;
+            binaryAssignments++;
+        }
+
+        binaryEndTime = System.nanoTime();
+        binaryDuration = binaryEndTime - binaryStartTime;
+
+        return data;
     }
 
     private static int[] generateData() {
         int[] ret = new int[1000];
 
         for (int i = 0; i < 1000; i++) {
-//            ret[i] = (int) (1 + Math.random() * 1000);
+            ret[i] = (int) (1 + Math.random() * 1000);
 //            ret[i] = i + 1;
-            ret[i] = 1000 - i;
+//            ret[i] = 1000 - i;
         }
 
         return ret;
@@ -53,42 +201,39 @@ public class Application {
     }
 
     private static String formatData(final int[] data) {
-        final int NUM_ROWS = 50;
-        final int NUM_COLUIMNS = 20;
-
         int rowCounter = 0;
-        String output;
+        StringBuilder output;
 
-        output = "================================================= ARRAY =================================================\n";
-        output += "INDEX {00} {01} {02} {03} {04} {05} {06} {07} {08} {09} {10} {11} {12} {13} {14} {15} {16} {17} {18} {19}\n";
-        for (int rowNumber = 0; rowNumber < NUM_ROWS; rowNumber++) {
-            String rowCounterAsString = String.valueOf(rowCounter);
+        output = new StringBuilder("================================================= ARRAY =================================================\n");
+        output.append("INDEX {00} {01} {02} {03} {04} {05} {06} {07} {08} {09} {10} {11} {12} {13} {14} {15} {16} {17} {18} {19}\n");
+        for (int rowNumber = 0; rowNumber < 50; rowNumber++) {
+            StringBuilder rowCounterAsString = new StringBuilder(String.valueOf(rowCounter));
             int lengthOfRowCounterString = rowCounterAsString.length();
 
             for (int paddingCharacterIndex = 0; paddingCharacterIndex < "###".length() - lengthOfRowCounterString; paddingCharacterIndex++) {
-                rowCounterAsString = "0" + rowCounterAsString;
+                rowCounterAsString.insert(0, "0");
             }
 
-            output += "{" + rowCounterAsString + "} ";
+            output.append("{").append(rowCounterAsString).append("} ");
 
-            rowCounter += NUM_COLUIMNS;
+            rowCounter += 20;
 
-            for (int columnNumber = 0; columnNumber < NUM_COLUIMNS; columnNumber++) {
-                String cellValueAsString = String.valueOf(data[NUM_COLUIMNS * rowNumber + columnNumber]);
+            for (int columnNumber = 0; columnNumber < 20; columnNumber++) {
+                StringBuilder cellValueAsString = new StringBuilder(String.valueOf(data[20 * rowNumber + columnNumber]));
                 int lengthOfCellValueString = cellValueAsString.length();
 
                 for (int paddingCharacterIndex = 0; paddingCharacterIndex < "####".length() - lengthOfCellValueString; paddingCharacterIndex++) {
-                    cellValueAsString = " " + cellValueAsString;
+                    cellValueAsString.insert(0, " ");
                 }
 
-                output += cellValueAsString + " ";
+                output.append(cellValueAsString).append(" ");
             }
 
-            output += "\n";
+            output.append("\n");
         }
 
-        output += "=========================================================================================================\n";
+        output.append("=========================================================================================================");
 
-        return output;
+        return output.toString();
     }
 }
