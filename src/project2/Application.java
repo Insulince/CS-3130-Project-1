@@ -5,13 +5,9 @@ import java.util.Arrays;
 public class Application {
     private static int linearComparisons;
     private static int linearAssignments;
-    private static long linearStartTime;
-    private static long linearEndTime;
     private static long linearDuration;
     private static int binaryComparisons;
     private static int binaryAssignments;
-    private static long binaryStartTime;
-    private static long binaryEndTime;
     private static long binaryDuration;
     
     public static void main(String[] args) throws RuntimeException {
@@ -21,19 +17,18 @@ public class Application {
         System.out.print("Creating copy of initial set of data for Array #2...");
         int[] data2 = Arrays.copyOf(data1, data1.length);
         System.out.println("  done.");
-
         System.out.print("Checking that Array #1 matches Array #2 before sorting...");
         if (!Arrays.equals(data1, data2)) {
             throw new RuntimeException("Internal Error: Could not duplicate Array #1 for Array #2, thus a valid performance comparison cannot be made! This is unusual behavior!");
         }
         System.out.println("  done.");
 
-        System.out.println("Contents of Array #1 before the sort:");
+        System.out.println("\nContents of Array #1 before the sort:");
         displayData(data1);
         System.out.println("Beginning Linear Insertion Sort on Array #1...");
         data1 = linearInsertionSort(data1);
         System.out.println("Linear Insertion Sort on Array #1 complete.");
-        System.out.println("Contents of Array #1 after the sort:");
+        System.out.println("\nContents of Array #1 after the sort:");
         displayData(data1);
         System.out.print("Checking that Array #1 is sorted in ascending order...");
         if (!sorted(data1)) {
@@ -41,17 +36,17 @@ public class Application {
         }
         System.out.println("  done.");
 
-        System.out.println("Array #1 sorted using:");
+        System.out.println("\nArray #1 sorted using:");
         System.out.println("Linear sort comparisons: " + linearComparisons);
         System.out.println("Linear sort assignments: " + linearAssignments);
         System.out.println("Linear sort duration (Milliseconds): " + (linearDuration / 1000000.0));
 
-        System.out.println("Contents of Array #2 before the sort:");
+        System.out.println("\nContents of Array #2 before the sort:");
         displayData(data2);
         System.out.println("Beginning Binary Insertion Sort on Array #2...");
-        binaryInsertionSort(data2);
+        data2 = binaryInsertionSort(data2);
         System.out.println("Binary Insertion Sort on Array #2 complete.");
-        System.out.println("Contents of Array #2 after the sort.");
+        System.out.println("\nContents of Array #2 after the sort.");
         displayData(data2);
         System.out.print("Checking that Array #2 is sorted in ascending order...");
         if (!sorted(data2)) {
@@ -59,27 +54,32 @@ public class Application {
         }
         System.out.println("  done.");
 
-        System.out.println("Array #2 sorted using:");
+        System.out.println("\nArray #2 sorted using:");
         System.out.println("Binary sort comparisons: " + binaryComparisons);
         System.out.println("Binary sort assignments: " + binaryAssignments);
         System.out.println("Binary sort duration (Milliseconds): " + (binaryDuration / 1000000.0));
 
-        System.out.print("Checking that Array #1 matches Array #2 after the sorting...");
+        System.out.print("\nChecking that Array #1 matches Array #2 after the sorting...");
         if (!Arrays.equals(data1, data2)) {
             throw new RuntimeException("Sorting Error: The two arrays do not match, one or both of the sorting algorithms failed to keep the data intact!");
         }
         System.out.println(" done.");
 
-        System.out.println("---------- Final data recap ----------");
+        System.out.println("\n---------- Final data recap ----------");
         System.out.println("Array #1 sorted using:");
         System.out.println("Linear sort comparisons: " + linearComparisons);
         System.out.println("Linear sort assignments: " + linearAssignments);
         System.out.println("Linear sort duration (Milliseconds): " + (linearDuration / 1000000.0));
-        System.out.println("Array #2 sorted using:");
+        System.out.println("\nArray #2 sorted using:");
         System.out.println("Binary sort comparisons: " + binaryComparisons);
         System.out.println("Binary sort assignments: " + binaryAssignments);
         System.out.println("Binary sort duration (Milliseconds): " + (binaryDuration / 1000000.0));
 
+        System.out.println("\n---------- Conclusion ----------");
+        System.out.println("After running a few times, it appears that there is a slight time improvement using the binary insertion");
+        System.out.println("sort versus the linear insertion sort, though there are rare exceptions depending on the data. In terms");
+        System.out.println("of comparisons and assignments, the two do exactly the same in assignments every time, but comparisons");
+        System.out.println("have been vastly reduced in the binary insertion sort.");
     }
 
     private static boolean sorted(final int[] data) {
@@ -95,7 +95,8 @@ public class Application {
     private static int[] linearInsertionSort(final int[] data) {
         linearComparisons = 0;
         linearAssignments = 0;
-        linearStartTime = System.nanoTime();
+        long linearEndTime;
+        long linearStartTime = System.nanoTime();
 
         for (int currentIntegerIndex = 1; currentIntegerIndex < data.length; currentIntegerIndex++) {
             //Select next int.
@@ -130,7 +131,8 @@ public class Application {
     private static int[] binaryInsertionSort(final int[] data) {
         binaryComparisons = 0;
         binaryAssignments = 0;
-        binaryStartTime = System.nanoTime();
+        long binaryEndTime;
+        long binaryStartTime = System.nanoTime();
 
         for (int currentIntegerIndex = 1; currentIntegerIndex < data.length; currentIntegerIndex++) {
             //Select next int.
